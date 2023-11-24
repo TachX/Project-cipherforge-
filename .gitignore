@@ -1,33 +1,391 @@
-# Gradle files
-.gradle/
-build/
+import numpy as np
+import pandas as pd
 
-# Local configuration file (sdk path, etc)
-local.properties
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
 
-# Log/OS Files
-*.log
+class AdaptiveStockPredictor:
+def __init__(self, n_estimators = 100, random_state = 42):
+self.n_estimators = n_estimators
+self.random_state = random_state
+self.model = None
 
-# Android Studio generated files and folders
-captures/
-.externalNativeBuild/
-.cxx/
-*.apk
-output.json
+def train_model(self, X_train, y_train):
+self.model = RandomForestRegressor(n_estimators = self.n_estimators, random_state = self.random_state)
+self.model.fit(X_train, y_train)
 
-# IntelliJ
-*.iml
-.idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
+def update_model(self, new_data):
+# Update the model with new data
+X_new = new_data[['Days']]
+y_new = new_data['Prices']
+self.model.fit(X_new, y_new)
 
-# Keystore files
-*.jks
-*.keystore
+def make_predictions(self, X_test):
+return self.model.predict(X_test)
 
-# Google Services (e.g. APIs or Firebase)
-google-services.json
+# Sample data
+np.random.seed(42)
+days = np.arange(1, 301, 1)
+prices = 50 + 2 * days + np.random.normal(scale = 10, size = len(days))
+data = pd.DataFrame({
+    'Days': days, 'Prices': prices
+})
 
-# Android Profiling
-*.hprof
+# Split data
+train_data, test_data = train_test_split(data, test_size = 0.2, random_state = 42)
+X_train, y_train = train_data[['Days']], train_data['Prices']
+X_test, y_test = test_data[['Days']], test_data['Prices']
+
+# Instantiate AdaptiveStockPredictor
+adaptive_predictor = AdaptiveStockPredictor()
+
+# Number of iterations for continuous improvement
+num_iterations = 10
+
+# Lists to store evaluation results
+mse_scores = []
+
+for i in range(num_iterations):
+# Train the model
+adaptive_predictor.train_model(X_train, y_train)
+
+# Generate new data for updating the model
+new_data = pd.DataFrame({
+    'Days': np.arange(301 + i*10, 311 + i*10, 1),
+    'Prices': 50 + 2 * np.arange(301 + i*10, 311 + i*10, 1) + np.random.normal(scale = 10, size = 10)})
+
+# Update the model with new data
+adaptive_predictor.update_model(new_data)
+
+# Make predictions
+predictions = adaptive_predictor.make_predictions(X_test)
+
+# Evaluate model performance
+mse = mean_squared_error(y_test, predictions)
+mse_scores.append(mse)
+
+# Plot results
+plt.scatter(X_test, y_test, color = 'black')
+plt.scatter(X_test, predictions, color = 'red', label = f'Predictions - Iteration {
+    i+1
+}')
+plt.xlabel('Days')
+plt.ylabel('Prices')
+plt.title(f'Adaptive Stock Price Prediction - Iteration {
+    i+1
+}')
+plt.legend()
+plt.show()
+
+# Visualize model performance over iterations
+plt.plot(range(1, num_iterations+1), mse_scores, marker = 'o', linestyle = '-', color = 'b')
+plt.xlabel('Iterations')
+plt.ylabel('Mean Squared Error')
+plt.title('Model Performance over Iterations')
+plt.show
+from sklearn.ensemble import RandomForestRegressor
+import matplotlib.pyplot as plt
+
+# Generate some sample data
+np.random.seed(42)
+days = np.arange(1, 101, 1)
+prices = 50 + 2 * days + np.random.normal(scale = 10, size = len(days))
+
+# Create a DataFrame
+data = pd.DataFrame({
+    'Days': days, 'Prices': prices
+})
+
+# Split the data into training and testing sets
+train_data, test_data = train_test_split(data, test_size = 0.2, random_state = 42)
+
+# Prepare the features and target variable
+X_train = train_data[['Days']]
+y_train = train_data['Prices']
+X_test = test_data[['Days']]
+y_test = test_data['Prices']
+
+# Create a more flexible regression model (Random Forest Regressor)
+model = RandomForestRegressor(n_estimators = 100, random_state = 42)
+
+# Train the model
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+predictions = model.predict(X_test)
+
+# Plot the results
+plt.scatter(X_test, y_test, color = 'black')
+plt.scatter(X_test, predictions, color = 'red', label = 'Predictions')
+plt.xlabel('Days')
+plt.ylabel('Prices')
+plt.title('Stock Price Prediction with Random Forest Regressor')
+plt.legend()
+plt.show()
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+import matplotlib.pyplot as plt
+
+class AdaptiveStockPredictor:
+def __init__(self, n_estimators = 100, random_state = 42):
+self.n_estimators = n_estimators
+self.random_state = random_state
+self.model = None
+
+def train_model(self, X_train, y_train):
+self.model = RandomForestRegressor(n_estimators = self.n_estimators, random_state = self.random_state)
+self.model.fit(X_train, y_train)
+
+def update_model(self, new_data):
+# Update the model with new data
+X_new = new_data[['Days']]
+y_new = new_data['Prices']
+self.model.fit(X_new, y_new)
+
+def make_predictions(self, X_test):
+return self.model.predict(X_test)
+
+# Sample data
+np.random.seed(42)
+days = np.arange(1, 101, 1)
+prices = 50 + 2 * days + np.random.normal(scale = 10, size = len(days))
+data = pd.DataFrame({
+    'Days': days, 'Prices': prices
+})
+
+# Split data
+train_data, test_data = train_test_split(data, test_size = 0.2, random_state = 42)
+X_train, y_train = train_data[['Days']], train_data['Prices']
+X_test, y_test = test_data[['Days']], test_data['Prices']
+
+# Instantiate AdaptiveStockPredictor
+adaptive_predictor = AdaptiveStockPredictor()
+
+# Train the model
+adaptive_predictor.train_model(X_train, y_train)
+
+# Update the model based on new data
+new_data = pd.DataFrame({
+    'Days': np.arange(101, 121, 1), 'Prices': 50 + 2 * np.arange(101, 121, 1) + np.random.normal(scale = 10, size = 20)})
+adaptive_predictor.update_model(new_data)
+
+# Make predictions
+predictions = adaptive_predictor.make_predictions(X_test)
+
+# Plot results
+plt.scatter(X_test, y_test, color = 'black')
+plt.scatter(X_test, predictions, color = 'red', label = 'Predictions')
+plt.xlabel('Days')
+plt.ylabel('Prices')
+plt.title('Adaptive Stock Price Prediction with Continuous Improvement')
+plt.legend()
+plt.show()
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+import matplotlib.pyplot as plt
+
+class AdaptiveStockPredictor:
+def __init__(self, n_estimators = 100, random_state = 42):
+self.n_estimators = n_estimators
+self.random_state = random_state
+self.model = None
+
+def train_model(self, X_train, y_train):
+self.model = RandomForestRegressor(n_estimators = self.n_estimators, random_state = self.random_state)
+self.model.fit(X_train, y_train)
+
+def update_model(self, new_data):
+# Update the model with new data
+X_new = new_data[['Days']]
+y_new = new_data['Prices']
+self.model.fit(X_new, y_new)
+
+def make_predictions(self, X_test):
+return self.model.predict(X_test)
+
+# Sample data
+np.random.seed(42)
+days = np.arange(1, 151, 1)
+prices = 50 + 2 * days + np.random.normal(scale = 10, size = len(days))
+data = pd.DataFrame({
+    'Days': days, 'Prices': prices
+})
+
+# Split data
+train_data, test_data = train_test_split(data, test_size = 0.2, random_state = 42)
+X_train, y_train = train_data[['Days']], train_data['Prices']
+X_test, y_test = test_data[['Days']], test_data['Prices']
+
+# Instantiate AdaptiveStockPredictor
+adaptive_predictor = AdaptiveStockPredictor()
+
+# Number of iterations for continuous improvement
+num_iterations = 10
+
+for i in range(num_iterations):
+# Train the model
+adaptive_predictor.train_model(X_train, y_train)
+
+# Generate new data for updating the model
+new_data = pd.DataFrame({
+    'Days': np.arange(151 + i*10, 161 + i*10, 1),
+    'Prices': 50 + 2 * np.arange(151 + i*10, 161 + i*10, 1) + np.random.normal(scale = 10, size = 10)})
+
+# Update the model with new data
+adaptive_predictor.update_model(new_data)
+
+# Make predictions
+predictions = adaptive_predictor.make_predictions(X_test)
+
+# Plot results
+plt.scatter(X_test, y_test, color = 'black')
+plt.scatter(X_test, predictions, color = 'red', label = f'Predictions - Iteration {
+    i+1
+}')
+plt.xlabel('Days')
+plt.ylabel('Prices')
+plt.title(f'Adaptive Stock Price Prediction with Continuous Improvement - Iteration {
+    i+1
+}')
+plt.legend()
+plt.show()
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+
+class AdaptiveStockPredictor:
+def __init__(self, n_estimators = 100, random_state = 42):
+self.n_estimators = n_estimators
+self.random_state = random_state
+self.model = None
+
+def train_model(self, X_train, y_train):
+self.model = RandomForestRegressor(n_estimators = self.n_estimators, random_state = self.random_state)
+self.model.fit(X_train, y_train)
+
+def update_model(self, new_data):
+# Update the model with new data
+X_new = new_data[['Days']]
+y_new = new_data['Prices']
+self.model.fit(X_new, y_new)
+
+def make_predictions(self, X_test):
+return self.model.predict(X_test)
+
+# Sample data
+np.random.seed(42)
+days = np.arange(1, 301, 1)
+prices = 50 + 2 * days + np.random.normal(scale = 10, size = len(days))
+data = pd.DataFrame({
+    'Days': days, 'Prices': prices
+})
+
+# Split data
+train_data, test_data = train_test_split(data, test_size = 0.2, random_state = 42)
+X_train, y_train = train_data[['Days']], train_data['Prices']
+X_test, y_test = test_data[['Days']], test_data['Prices']
+
+# Instantiate AdaptiveStockPredictor
+adaptive_predictor = AdaptiveStockPredictor()
+
+# Number of iterations for continuous improvement
+num_iterations = 10
+
+# Lists to store evaluation results
+mse_scores = []
+
+for i in range(num_iterations):
+# Train the model
+adaptive_predictor.train_model(X_train, y_train)
+
+# Generate new data for updating the model
+new_data = pd.DataFrame({
+    'Days': np.arange(301 + i*10, 311 + i*10, 1),
+    'Prices': 50 + 2 * np.arange(301 + i*10, 311 + i*10, 1) + np.random.normal(scale = 10, size = 10)})
+
+# Update the model with new data
+adaptive_predictor.update_model(new_data)
+
+# Make predictions
+predictions = adaptive_predictor.make_predictions(X_test)
+
+# Evaluate model performance
+mse = mean_squared_error(y_test, predictions)
+mse_scores.append(mse)
+
+# Plot results
+plt.scatter(X_test, y_test, color = 'black')
+plt.scatter(X_test, predictions, color = 'red', label = f'Predictions - Iteration {
+    i+1
+}')
+plt.xlabel('Days')
+plt.ylabel('Prices')
+plt.title(f'Adaptive Stock Price Prediction - Iteration {
+    i+1
+}')
+plt.legend()
+plt.show()
+
+# Visualize model performance over iterations
+plt.plot(range(1, num_iterations+1), mse_scores, marker = 'o', linestyle = '-', color = 'b')
+plt.xlabel('Iterations')
+plt.ylabel('Mean Squared Error')
+plt.title('Model Performance over Iterations')
+plt.show()
+# ... (previous code)
+
+# Lists to store evaluation results
+mse_scores = []
+
+for i in range(num_iterations):
+# Train the model
+adaptive_predictor.train_model(X_train, y_train)
+
+# Generate new data for updating the model
+new_data = pd.DataFrame({
+    'Days': np.arange(301 + i * 10, 311 + i * 10, 1),
+    'Prices': 50 + 2 * np.arange(301 + i * 10, 311 + i * 10, 1) + np.random.normal(scale = 10,
+        size = 10)})
+
+# Update the model with new data
+adaptive_predictor.update_model(new_data)
+
+# Make predictions
+predictions = adaptive_predictor.make_predictions(X_test)
+
+# Evaluate model performance
+mse = mean_squared_error(y_test, predictions)
+mse_scores.append(mse)
+
+# Plot results after all iterations
+for i in range(num_iterations):
+plt.scatter(X_test, y_test, color = 'black')
+predictions = adaptive_predictor.make_predictions(X_test)
+plt.scatter(X_test, predictions, color = 'red', label = f'Predictions - Iteration {
+    i + 1
+}')
+
+plt.xlabel('Days')
+plt.ylabel('Prices')
+plt.title(f'Adaptive Stock Price Prediction - Iteration {
+    num_iterations
+}')
+plt.legend()
+plt.show()
+
+# Visualize model performance over iterations
+plt.plot(range(1, num_iterations + 1), mse_scores, marker = 'o', linestyle = '-', color = 'b')
+plt.xlabel('Iterations')
+plt.ylabel('Mean Squared Error')
+plt.title('Model Performance over Iterations')
+plt.show()
